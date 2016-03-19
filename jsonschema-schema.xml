@@ -9,6 +9,7 @@
 <!ENTITY RFC4627 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4627.xml">
 <!ENTITY RFC5322 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5322.xml">
 <!ENTITY RFC5646 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5646.xml">
+<!ENTITY RFC5893 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5893.xml">
 ]>
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
@@ -979,7 +980,10 @@
 
                 <section title="Valid values">
                     <t>
-                        The value of both of these keywords MUST be a string.
+                        The value of both of these keywords MUST be a string or an object
+                        whose properties are <xref target="RFC5646">RFC 5646</xref>
+                        language tags or the keyword "$direction" and whose values are strings
+                        or null.
                     </t>
                 </section>
 
@@ -987,8 +991,18 @@
                     <t>
                         Both of these keywords can be used to decorate a user interface with
                         information about the data produced by this user interface. A title will
-                        preferrably be short, whereas a description will provide explanation about
+                        preferably be short, whereas a description will provide explanation about
                         the purpose of the instance described by this schema.
+                    </t>
+
+                    <t>
+                        If either of these keywords is an object with language tag properties, the
+                        application MUST determine the current locale by an application-supplied
+                        value or defaulting to the value of "defaultLocale" if present, or "en"
+                        if not. Upon determining the locale, the application must match against
+                        the object's language tag properties and use the corresponding value.
+                        The application SHOULD use any "$direction" property value to properly
+                        display the directionality of the text.
                     </t>
 
                     <t>
@@ -998,7 +1012,78 @@
 
             </section>
 
-            <section title='"defaultLocale", "locales", and "localeKey"'>
+            <section title='"enumTitles"'>
+
+                <section title="Valid values">
+                    <t>
+                        The value of this keyword MUST be an array with items which are either
+                        strings, null, or objects whose properties are <xref target="RFC5646">RFC 5646</xref>
+                        language tags or the keyword "$direction" and whose values are strings or null.
+                    </t>
+                </section>
+
+                <section title="Purpose">
+                    <t>
+                        This keyword MUST NOT be present if "enum" is not present on the same
+                        schema object and its array length MUST be equal to the length of the "enum"
+                        property. Each array item in "enumTitles" is considered as corresponding
+                        to the same index on "enum". If an array item is null in "enumTitles", the
+                        title should default to the corresponding value in "enum".
+                    </t>
+
+                    <t>
+                        If an array item is an object with language tag properties, the
+                        application MUST determine the current locale by an application-supplied
+                        value or defaulting to the value of "defaultLocale" if present, or "en"
+                        if not. Upon determining the locale, the application must match against
+                        the object's language tag properties and use the corresponding value.
+                    </t>
+
+                    <t>
+                        The "enumTitles" keyword can be used to decorate a user interface with
+                        information about the data produced by this user interface. It should
+                        preferably be short and could be used to provide a more human-readable
+                        label for enumerated values.
+                    </t>
+
+                    <t>
+                        This keyword MAY be used in root schemas, and in any subschemas.
+                    </t>
+                </section>
+
+            </section>
+
+            <section title='"default"'>
+
+                <section title="Valid values">
+                    <t>
+                        There are no restrictions placed on the value of this keyword.
+                    </t>
+                </section>
+
+                <section title="Purpose">
+                    <t>
+                        This keyword can be used to supply a default JSON value associated with a
+                        particular schema. It is RECOMMENDED that a default value be valid against
+                        the associated schema.
+                    </t>
+
+                    <t>
+                        This keyword MAY be used in root schemas, and in any subschemas.
+                    </t>
+                </section>
+
+            </section>
+        </section>
+
+        <section title="Internationalization (i18n)">
+
+            <section title='"locales"'>
+                <t>
+                </t>
+            </section>
+
+            <section title=': "defaultLocale", "locales", and "localeKey"'>
 
                 <section title="Valid values">
                     <t>
@@ -1039,28 +1124,6 @@
                     <t>
                          "defaultLocale" and "locales" MAY be used in root schemas while "localeKey"
                          MAY be used on root schemas and in any subschemas.
-                    </t>
-                </section>
-
-            </section>
-
-            <section title='"default"'>
-
-                <section title="Valid values">
-                    <t>
-                        There are no restrictions placed on the value of this keyword.
-                    </t>
-                </section>
-
-                <section title="Purpose">
-                    <t>
-                        This keyword can be used to supply a default JSON value associated with a
-                        particular schema. It is RECOMMENDED that a default value be valid against
-                        the associated schema.
-                    </t>
-
-                    <t>
-                        This keyword MAY be used in root schemas, and in any subschemas.
                     </t>
                 </section>
 
@@ -1183,6 +1246,37 @@
                             A string instance is valid against this attribute if it is a valid
                             representation of an IPv6 address as defined in <xref
                             target="RFC2373">RFC 2373, section 2.2</xref>.
+                        </t>
+                    </section>
+                </section>
+
+                <section title="language-tag">
+                    <section title="Applicability">
+                        <t>
+                            This attribute applies to string instances.
+                        </t>
+                    </section>
+
+                    <section title="Validation">
+                        <t>
+                            A string instance is valid against this attribute if it is a valid
+                            language tag as defined by <xref target="RFC5646">RFC 5646, section 2</xref>.
+                        </t>
+                    </section>
+                </section>
+                
+                <section title="language-direction">
+                    <section title="Applicability">
+                        <t>
+                            This attribute applies to string instances.
+                        </t>
+                    </section>
+
+                    <section title="Validation">
+                        <t>
+                            A string instance is valid against this attribute if it is a valid
+                            language direction, "R" or "L", as referenced in
+                            <xref target="RFC5893">RFC 5893, section 1.4</xref>.
                         </t>
                     </section>
                 </section>
@@ -1373,6 +1467,7 @@
             &RFC4627;
             &RFC5322;
             &RFC5646;
+            &RFC5893;
             <reference anchor="ecma262"
             target="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
                 <front>
